@@ -37,7 +37,7 @@ int main(int argc, char *argv[]){
 	count=0;
 	for(unsigned int i=0; i<rows; ++i){
 		for (unsigned int j=0; j<cols; ++j){
-			double val=((double)rand()/(double)RAND_MAX);
+			double val=((double)rand()/(double)RAND_MAX)*2 -1;
 			count+=fwrite(&val, sizeof(double), 1, stdout);
 		}
 		assert(count==cols);
