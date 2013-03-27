@@ -1,0 +1,15 @@
+matrixnorm [naif | singlepass] matrix_file vector_file
+	verifica l'antisimmetria e calcola (vT)*M*(v). naif: verifica e prodotto eseguiti separatamente. singlepass: unica passata per le due operazioni
+
+matrixdump matrix_file
+	stampa a console un file matrice
+
+matrixgenrand numrows numcols
+	genera una matrice numrows*numcols contente valori random. la matrice è scritta su stdout
+
+vectorgenrand numelements
+	genera un vettore di numelements elementi. il vettore è scritto su stdout
+
+matrixgenantisym numrows
+	genera una matrice antisimmetrica di numrows*numrows elementi. la matrice è scritta su stdout
+	

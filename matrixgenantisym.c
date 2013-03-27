@@ -16,13 +16,11 @@ double getElement(t_asm m, unsigned int r, unsigned int c){
 	double element;
 	if(r==c){
 		element=0;
-	}
-	if(r<c){
+	}else if(r<c){
 		//right upper triangle
 		unsigned int index= c + r*m.n_rows - ((r+1)*(r+2))/2;
 		element= m.elements[index];
-	}
-	if(r>c){
+	}else if(r>c){
 		//left lower triangle - invert col with row index
 		unsigned int index= r + c*m.n_rows - ((c+1)*(c+2))/2;
 		element= -m.elements[index];
