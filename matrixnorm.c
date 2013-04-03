@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
 
+#define ITERATIONS 5
 
 typedef struct matrix{
 	unsigned int rows;
@@ -94,7 +96,7 @@ int verifyAntiSymmetryCalcNorm(double* norm, t_matrix m, t_vector v){
 
 int main(int argc, char *argv[]){
 	if(argc!=4){
-		printf("USAGE: matrixnorm [naif | singlepass] matrix_file vector_file\n");
+		printf("USAGE: matrixnorm [naif | singlepass | bench] matrix_file vector_file\n");
 		exit(1);
 	}
 
@@ -143,36 +145,48 @@ int main(int argc, char *argv[]){
 	fclose(f_vect);
 	assert(count=vector.count);
 
+	//multiplicability
+	assert(matrix.cols==vector.count);
+
+	int antim=0;
+	double norm=0;
+
 	if(strcmp(argv[1], "naif")==0){
 		//check2: antisymmetry
-		if(!verifyAntiSymmetry(matrix)){
-			printf("The matrix is not antisymmetric\n");
-			free(matrix.elements);
-			free(vector.elements);
-			exit(0);
-		}else{
-			printf("The matrix is antisymmetric\n");
-		}
-
-		//check3: multiplicability
-		assert(matrix.cols==vector.count);
-		printf("Norm: %e\n", calcNorm(matrix, vector));
+		antim=verifyAntiSymmetry(matrix);
+		norm=calcNorm(matrix, vector);
 
 	}else if(strcmp(argv[1], "singlepass")==0){
-		assert(matrix.cols==vector.count);
-		double norm;
+		antim=verifyAntiSymmetryCalcNorm(&norm, matrix, vector);
 
-		if(!verifyAntiSymmetryCalcNorm(&norm, matrix, vector)){
-			printf("The matrix is not antisymmetric\n");
-			free(matrix.elements);
-			free(vector.elements);
-			exit(0);
-		}else{
-			printf("The matrix is antisymmetric\n");
-			printf("Norm: %e\n", norm);
+	}else if(strcmp(argv[1], "bench")==0){
+		clock_t start_t=clock();
+		//naif
+		for(int i=0; i < ITERATIONS ; ++i){
+			antim=verifyAntiSymmetry(matrix);
+			norm=calcNorm(matrix, vector);
 		}
+
+		double naifTime= ((clock()-start_t)/(double) ITERATIONS) / CLOCKS_PER_SEC;
+
+		start_t=clock();
+		//singlepass
+		for(int i=0; i< ITERATIONS ; ++i){
+			antim=verifyAntiSymmetryCalcNorm(&norm, matrix, vector);
+		}
+
+		double singlePTime= ((clock()-start_t)/(double) ITERATIONS) / CLOCKS_PER_SEC;
+
+		printf("Naif:\t\t\t%e seconds\nSinglePass:\t\t%e seconds\n", naifTime, singlePTime);
 	}
-	
+
+	if(antim){
+		printf("The matrix is antisymmetric\n");
+	}else{
+		printf("The matrix is not antisymmetric\n");
+	}
+	printf("Norm: %e\n", norm);
+
 	free(matrix.elements);
 	free(vector.elements);
 	return 0;
