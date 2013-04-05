@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <time.h>
 
-#define ITERATIONS 2
+#define ITERATIONS 5
 
 typedef struct matrix{
 	unsigned int rows;
@@ -166,24 +166,37 @@ int main(int argc, char *argv[]){
 		antim=verifyAntiSymmetryCalcNorm(&norm, matrix, vector);
 
 	}else if(strcmp(argv[1], "bench")==0){
-		clock_t start_t=clock();
 		//naif
+		printf("Naif:\n");
+
+		double iter_time;
+		double naifTime=0;
+		clock_t start_t=clock();
 		for(int i=0; i < ITERATIONS ; ++i){
 			antim |=verifyAntiSymmetry(matrix);
 			norm=calcNorm(matrix, vector);
+
+			iter_time=(clock()-start_t)/((double)CLOCKS_PER_SEC);
+			naifTime+=iter_time;
+			printf("\t\t\t%e seconds\n", iter_time);
+			start_t=clock();
 		}
-
-		double naifTime= ((clock()-start_t)/(double) ITERATIONS) / CLOCKS_PER_SEC;
-
-		start_t=clock();
+		printf("\taverage: %e seconds\n", naifTime/ITERATIONS);
+		
 		//singlepass
+		printf("SinglePass:\n");
+
+		double singlePTime=0;
+		start_t=clock();
 		for(int i=0; i< ITERATIONS ; ++i){
 			antim |=verifyAntiSymmetryCalcNorm(&norm, matrix, vector);
+
+			iter_time=(clock()-start_t)/((double)CLOCKS_PER_SEC);
+			singlePTime+=iter_time;
+			printf("\t\t\t%e seconds\n", iter_time);
+			start_t=clock();
 		}
-
-		double singlePTime= ((clock()-start_t)/(double) ITERATIONS) / CLOCKS_PER_SEC;
-
-		printf("Naif:\t\t\t%e seconds\nSinglePass:\t\t%e seconds\n", naifTime, singlePTime);
+		printf("\taverage: %e seconds\n", singlePTime/ITERATIONS);
 	}
 
 	if(antim){
