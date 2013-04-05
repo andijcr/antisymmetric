@@ -1,15 +1,55 @@
-matrixnorm [naif | singlepass] matrix_file vector_file
-	verifica l'antisimmetria e calcola (vT)*M*(v). naif: verifica e prodotto eseguiti separatamente. singlepass: unica passata per le due operazioni
+Task:
+"The company you work for commissioned you a simple serial task, part of a larger project to be parallelized in the near future through MPI technology. The program required from you will have to read a matrix of real and check the antisymmetry. The matrix is written to disk as:
+
+	Pair of unsigned integers (size);
+	List of values ​​in IEEE-745 double-precision (elements).
+
+Additionally vompute, for a given input vector x from file (with format similar to the matrix), the value xT A x."
+
+to build enter in 
+	build
+directory and run "cmake .."
+this build the following programs:
+
+matrixnorm [naif | singlepass | bench] matrix_file vector_file
+	tests the antisymmetry and computes (vector T)*Matrix*(vector)
+		naif: test and multiplication executed sequentially
+		singlepass: test and multiplication executed in the same loop
+		bech: benchmark naif and singlepass options
 
 matrixdump matrix_file
-	stampa a console un file matrice
+	prettyprint to stdout a matrix_file in 
 
-matrixgenrand numrows numcols
-	genera una matrice numrows*numcols contente valori random. la matrice è scritta su stdout
+matrixgenrand #rows #cols
+	produces to stdout a #rows*#cols matrix file with random values. 
 
-vectorgenrand numelements
-	genera un vettore di numelements elementi. il vettore è scritto su stdout
+vectorgenrand #elements
+	produces to stdout a #elements vector file with random values. 
 
-matrixgenantisym numrows
-	genera una matrice antisimmetrica di numrows*numrows elementi. la matrice è scritta su stdout
-	
+matrixgenantisym #rows
+	produces to stdout a #rows*#rows matrix file with random values such that the matrix tests positive for antisymmetry. 
+
+Usually one would generate a random matrix and a random vector to test ./matrixnorm like this:
+	$ ./matrixgenantisym 17000 > antisym
+	$ ./vectorgenrand 17000 > vector
+
+and then bench matrixnorm like this:
+	$ ./matrixnorm bench antisym vector
+		Naif:
+					3.960000e+00 seconds
+					4.080000e+00 seconds
+					3.960000e+00 seconds
+					3.870000e+00 seconds
+					3.850000e+00 seconds
+			average: 3.944000e+00 seconds
+		SinglePass:
+					3.790000e+00 seconds
+					3.840000e+00 seconds
+					3.800000e+00 seconds
+					3.800000e+00 seconds
+					3.790000e+00 seconds
+			average: 3.804000e+00 seconds
+		The matrix is antisymmetric
+		Norm: -1.219558e-11
+
+beware of antisym file size (2Gb for 17000 rows)
