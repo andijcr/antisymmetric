@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
-project (Matrix_Norm )
-add_definitions("-g -O3 -Wall -pedantic -std=c99")
+project (Matrix_Norm)
+add_definitions("-O3 -Wall -pedantic -std=c99")
 add_executable(matrixnorm matrixnorm.c)
 add_executable(matrixgenrand matrixgenrand.c)
 add_executable(matrixgenantisym matrixgenantisym.c)

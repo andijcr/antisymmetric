@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <time.h>
 
-#define ITERATIONS 5
+#define ITERATIONS 2
 
 typedef struct matrix{
 	unsigned int rows;
@@ -17,9 +17,15 @@ typedef struct vector{
 	double* elements;
 } t_vector;
 
-double m_element(unsigned int i, unsigned int j, t_matrix m){
-	return m.elements[i*(m.rows)+j];	
+
+unsigned int m_index(unsigned int i, unsigned int j, t_matrix m){
+	return i*(m.rows)+j;
 }
+
+double m_element(unsigned int i, unsigned int j, t_matrix m){
+	return m.elements[m_index(i, j, m)];	
+}
+
 
 int verifyAntiSymmetry(t_matrix m){
 
@@ -163,7 +169,7 @@ int main(int argc, char *argv[]){
 		clock_t start_t=clock();
 		//naif
 		for(int i=0; i < ITERATIONS ; ++i){
-			antim=verifyAntiSymmetry(matrix);
+			antim |=verifyAntiSymmetry(matrix);
 			norm=calcNorm(matrix, vector);
 		}
 
@@ -172,7 +178,7 @@ int main(int argc, char *argv[]){
 		start_t=clock();
 		//singlepass
 		for(int i=0; i< ITERATIONS ; ++i){
-			antim=verifyAntiSymmetryCalcNorm(&norm, matrix, vector);
+			antim |=verifyAntiSymmetryCalcNorm(&norm, matrix, vector);
 		}
 
 		double singlePTime= ((clock()-start_t)/(double) ITERATIONS) / CLOCKS_PER_SEC;
